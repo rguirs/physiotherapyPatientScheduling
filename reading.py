@@ -2,20 +2,24 @@ import pandas as pd
 from datetime import datetime, timedelta
 import copy
 
-from utils import simplifyString, get_availability_byPreferenceLists, get_availability_byCiclicLists
+from globalConsts import LANGUAGE
 
-###dont forget to call the function simplifyString when handling slot ids from input files
+from utils import simplifyString, get_availability_byPreferenceLists, get_availability_byCyclicLists
+
+'''
+dont forget to call the function simplifyString when handling slot ids from input files
+'''
 
 def read_excel_data(initialDay, path_file, planningHorizon):
     
     #setting the planning horizon - hard coded
-    print("----- lendo configurações de turnos")
+    print("----- reading settings and slots") if LANGUAGE == "en" else print("----- lendo configurações de horário")
     
     #reading the slots
     try:   
         df_slot = pd.read_excel(path_file, sheet_name="DefSlot", index_col = "Nome Slot", dtype = str).dropna(how='all')
     except:
-        print("Arquivo não encontrado!!!")
+        print("FILE NOT FOUND!!!") if LANGUAGE == "en" else print("Arquivo não encontrado!!!")
         exit()
     df_slot["Início Slot"] = pd.to_datetime(df_slot["Início Slot"], format='%H:%M:%S')
     df_slot["Fim Slot"] = pd.to_datetime(df_slot["Fim Slot"], format='%H:%M:%S')
@@ -25,7 +29,7 @@ def read_excel_data(initialDay, path_file, planningHorizon):
         slots[simplifyString(index)] = {"start": row["Início Slot"], "end": row["Fim Slot"]}
     
     #reading the staff
-    print("----- lendo informações do pessoal")
+    print("----- reading staff's info") if LANGUAGE == "en" else print("----- lendo informações do pessoal")
     df_staff = pd.read_excel(path_file, sheet_name="Pessoal", dtype = str).dropna(how='all')
     df_staff.set_index(['ID'], inplace=True)
     
@@ -39,8 +43,8 @@ def read_excel_data(initialDay, path_file, planningHorizon):
             print(f"Pesquisadorx com nome {row["nome"]} possui um Tipo desconhecido. Deveria ser ou Fisioterapia ou Pesquisa")
             exit()
             
-    #creating the matrix N_pf -> the days and shifts the research/physio arent available
-    print("----- lendo disponibilidade do pessoal")
+    #creating the matrix N_pf -> the days and shifts the research/physio aren't available
+    print("----- reading staff's availability") if LANGUAGE == "en" else print("----- lendo disponibilidade do pessoal")
     N_pf = {}
     for staffMember in staff.keys():
         N_pf[staffMember] = {}
@@ -51,14 +55,14 @@ def read_excel_data(initialDay, path_file, planningHorizon):
     df_staffSlotsDays = pd.read_excel(path_file, sheet_name="Pessoal|Dias", dtype = str).dropna(how='all')
     df_staffSlotsDays = df_staffSlotsDays.set_index("ID")
     N_pf = get_availability_byPreferenceLists(N_pf, df_staffSlotsDays, slots, ["ID", "Nome"], planningHorizon)
-    ####GET A CICLICAL UNAVAILABILITY OF RESEARCHERS
-    df_staffSlotsCicle = pd.read_excel(path_file, sheet_name="Pessoal|Ciclo", dtype = str).dropna(how='all')
-    df_staffSlotsCicle = df_staffSlotsCicle.set_index("ID")
-    N_pf = get_availability_byCiclicLists(N_pf, df_staffSlotsCicle, slots, planningHorizon, ["ID", "Nome"], "Pessoal|Ciclo")
+    ####GET A CyCLICAL UNAVAILABILITY OF RESEARCHERS
+    df_staffSlotsCycle = pd.read_excel(path_file, sheet_name="Pessoal|Ciclo", dtype = str).dropna(how='all')
+    df_staffSlotsCycle = df_staffSlotsCycle.set_index("ID")
+    N_pf = get_availability_byCyclicLists(N_pf, df_staffSlotsCycle, slots, planningHorizon, ["ID", "Nome"], "Pessoal|Ciclo")
     required_N_pf = copy.deepcopy(N_pf)
     
     #reading the patients
-    print("----- lendo informações dos pacientes")
+    print("----- reading patient's info") if LANGUAGE == "en" else print("----- lendo informações dos pacientes")
     df_patients = pd.read_excel(path_file, sheet_name="Pacientes", dtype = str).dropna(how='all')
     df_patients.set_index(['ID'], inplace=True)
     
@@ -66,8 +70,8 @@ def read_excel_data(initialDay, path_file, planningHorizon):
     for index, row in df_patients.iterrows():
         patients[index] = {"Name": row["Nome"], "researcher": None, "physio": None}
     
-    #creating the matrix N_i -> the days and shifts the patients arent available
-    print("----- lendo disponibilidade do paciente")
+    #creating the matrix N_i -> the days and shifts the patients aren't available
+    print("----- reading patient's availability") if LANGUAGE == "en" else print("----- lendo disponibilidade do paciente")
     N_i = {}
     for patient in patients.keys():
         N_i[patient] = {}
@@ -83,12 +87,12 @@ def read_excel_data(initialDay, path_file, planningHorizon):
     df_patientSlotsDays = df_patientSlotsDays.set_index("ID")
     N_i = get_availability_byPreferenceLists(N_i, df_patientSlotsDays, slots, ["ID", "Nome"], planningHorizon)
     
-    df_patientSlotsCicle = pd.read_excel(path_file, sheet_name="Pacientes|Ciclo", dtype = str).dropna(how='all')
-    df_patientSlotsCicle = df_patientSlotsCicle.set_index("ID")
-    N_i = get_availability_byCiclicLists(N_i, df_patientSlotsCicle, slots, planningHorizon, ["ID", "Nome"], "Pacientes|Ciclo")
+    df_patientSlotsCycle = pd.read_excel(path_file, sheet_name="Pacientes|Ciclo", dtype = str).dropna(how='all')
+    df_patientSlotsCycle = df_patientSlotsCycle.set_index("ID")
+    N_i = get_availability_byCyclicLists(N_i, df_patientSlotsCycle, slots, planningHorizon, ["ID", "Nome"], "Pacientes|Ciclo")
     
     #get latest schedule
-    print("----- lendo escala anterior")
+    print("----- reading previous schedule") if LANGUAGE == "en" else print("----- lendo escala anterior")
     sys_esc = pd.read_excel(path_file, sheet_name="sysEsc", dtype = str).dropna(how='all')
     
     sessions = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09"]
@@ -137,7 +141,7 @@ def read_excel_data(initialDay, path_file, planningHorizon):
                 schedule[index][f"FH{follow}"] = simplifyString(row[f"FH{follow}"])
                 
     #check if sessions were deleted
-    print("----- terminando leitura de dados")
+    print("----- finishing reading data") if LANGUAGE == "en" else print("----- terminando leitura de dados")
     for patient in patients.keys():
         
         for follow in range(2):
@@ -154,7 +158,7 @@ def read_excel_data(initialDay, path_file, planningHorizon):
                 schedule[patient][f"SD0{session}"] = None
                 schedule[patient][f"SH0{session}"] = None
                 
-    #update N_pf according to days that a patient is designated with an appointement
+    #update N_pf according to days that a patient is designated with an appointment
     for patient in patients.keys():
         for follow in range(2):
             if not schedule[patient][f"FD0{follow}"] is None:

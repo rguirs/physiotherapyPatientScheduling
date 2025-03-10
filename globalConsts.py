@@ -1,0 +1,22 @@
+LANGUAGE = "en" ## or "pt"
+
+if LANGUAGE == "en":
+    sheet_patients = "Patients"
+    sheet_patientsDays = "Patients|Days"
+    sheet_patientsCyclic = "Patients|Cycle"
+    sheet_staff = "Staff"
+    sheet_staffDays = "Staff|Days"
+    sheet_staffCyclic = "Staff|Cycle"
+    sheet_scheduleMain = "Schedule"
+    sheet_defSlot = "DefSlot"
+    sheet_sysEsc = "sysEsc"
+else:
+    sheet_patients = "Pacientes"
+    sheet_patientsDays = "Pacientes|Dias"
+    sheet_patientsCyclic = "Pacientes|Ciclo"
+    sheet_staff = "Pessoal"
+    sheet_staffDays = "Pessoal|Dias"
+    sheet_staffCyclic = "Pessoal|Ciclo"
+    sheet_scheduleMain = "Escala"
+    sheet_defSlot = "DefSlot"
+    sheet_sysEsc = "sysEsc"

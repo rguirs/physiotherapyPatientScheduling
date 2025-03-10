@@ -1,13 +1,15 @@
 import pandas as pd
 import numpy as np
 
+from globalConsts import LANGUAGE
+
 import shutil
 
 def generateOutput(file_path, file_path_input, patients, schedule, staff, required_N_pf, slots, planningHorizon):
     
     shutil.copyfile(file_path_input, file_path)
     
-    print("----- gerando tabela dos pacientes")
+    print("---------- creating patient's schedule table") if LANGUAGE == "en" else print("----- gerando tabela dos pacientes")
     output_patients = pd.DataFrame(dtype = str)
     output_patients["ID"] = patients.keys()
     
@@ -38,12 +40,12 @@ def generateOutput(file_path, file_path_input, patients, schedule, staff, requir
     output_appointmentsStaff = output_appointmentsStaff.fillna("")
     
     ###create table for each staff member
-    print("----- gerando tabela de cada pesquisadorx/fisio")
+    print("---------- creating a schedule table for each reseracher/physio") if LANGUAGE == "en" else print("----- gerando tabela de cada pesquisadorx/fisio")
     total = len(staff.keys())
     total = 1 if total < 1 else total
     done = 0
     for staffMember in staff:
-        print(f"----- gerando tabela de cada pesquisadorx/fisio: {done/total}")
+        print(f"---------- creating a schedule table for each researcher/physio: {done/total}") if LANGUAGE == "en" else print(f"----- gerando tabela de cada pesquisadorx/fisio: {done/total}")
         output_staffMember = pd.DataFrame(index = slots.keys(), columns = planningHorizon)
         for day in planningHorizon:
             for slot in slots.keys():
@@ -66,15 +68,15 @@ def generateOutput(file_path, file_path_input, patients, schedule, staff, requir
         with pd.ExcelWriter(file_path, mode="a", if_sheet_exists="replace", engine="openpyxl") as writer:
             output_staffMember.to_excel(writer, sheet_name=f"Escala|{staffMember}")
     done = total
-    print(f"----- gerando tabela de cada pesquisadorx/fisio: {done/total}")
+    print(f"----- creating a schedule table for each researcher/physio: {done/total}") if LANGUAGE == "en" else print(f"----- gerando tabela de cada pesquisadorx/fisio: {done/total}")
             
-    print("----- gerando tabela geral")
+    print("----- creating main schedule table") if LANGUAGE == "en" else print("----- gerando tabela geral")
     output_appointmentsStaff.columns = planningHorizon_asDate
     with pd.ExcelWriter(file_path, mode="a", if_sheet_exists="replace", engine="openpyxl") as writer:
             output_appointmentsStaff.to_excel(writer, sheet_name=f"Escala")
     
     ###create sysEsc
-    print("----- gerando tabela do sistema (sysEsc)")
+    print("----- creating system table (sysEsc)") if LANGUAGE == "en" else print("----- gerando tabela do sistema (sysEsc)")
     sysEsc = pd.DataFrame(dtype = str)
     sysEsc["ID"] = patients.keys()
     sysEsc["Pesq"] = pd.Series("")
