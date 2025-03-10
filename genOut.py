@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from globalConsts import LANGUAGE
+from globalConsts import *
 
 import shutil
 
@@ -11,28 +11,28 @@ def generateOutput(file_path, file_path_input, patients, schedule, staff, requir
     
     print("---------- creating patient's schedule table") if LANGUAGE == "en" else print("----- gerando tabela dos pacientes")
     output_patients = pd.DataFrame(dtype = str)
-    output_patients["ID"] = patients.keys()
+    output_patients[FIELD_PATIENTS_ID] = patients.keys()
     
     output_patients[" "] = np.nan
     
-    output_patients["Nome"] = pd.Series("")
+    output_patients[FIELD_PATIENTS_NAME] = pd.Series("")
     for patient in patients.keys():
-        output_patients.loc[output_patients["ID"] == patient, "Nome"] = patients[patient]["Name"]
+        output_patients.loc[output_patients[FIELD_PATIENTS_ID] == patient, FIELD_PATIENTS_NAME] = patients[patient]["Name"]
     
     output_patients["  "] = np.nan
     
     sessionNames = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]
     for i in range(10):
-        output_patients[f"Sessão {sessionNames[i]}"] = pd.Series("")
+        output_patients[f"{SESSION_NAME_FOR_USER} {sessionNames[i]}"] = pd.Series("")
         for patient in patients.keys():
-            output_patients.loc[output_patients["ID"] == patient, f"Sessão {sessionNames[i]}"] = schedule[patient][f"SD0{i}"].strftime('%d/%m/%Y') + " " + schedule[patient][f"SH0{i}"]
+            output_patients.loc[output_patients[FIELD_PATIENTS_ID] == patient, f"{SESSION_NAME_FOR_USER} {sessionNames[i]}"] = schedule[patient][f"SD0{i}"].strftime('%d/%m/%Y') + " " + schedule[patient][f"SH0{i}"]
     for i in range(2):
-        output_patients[f"Follow {(90*(i+1))}"] = pd.Series("")
+        output_patients[f"{FOLLOW_NAME_FOR_USER} {(90*(i+1))}"] = pd.Series("")
         for patient in patients.keys():
-            output_patients.loc[output_patients["ID"] == patient, f"Follow {(90*(i+1))}"] = schedule[patient][f"FD0{i}"].strftime('%d/%m/%Y') + " " + schedule[patient][f"FH0{i}"]
+            output_patients.loc[output_patients[FIELD_PATIENTS_ID] == patient, f"{FOLLOW_NAME_FOR_USER} {(90*(i+1))}"] = schedule[patient][f"FD0{i}"].strftime('%d/%m/%Y') + " " + schedule[patient][f"FH0{i}"]
     
     with pd.ExcelWriter(file_path, mode="a", if_sheet_exists="replace", engine="openpyxl") as writer:
-        output_patients.to_excel(writer, sheet_name="Pacientes", index=False)
+        output_patients.to_excel(writer, sheet_name=SHEET_PATIENTS, index=False)
     
     planningHorizon_asDate = [asDate.strftime("%m/%d/%Y") for asDate in planningHorizon]
     
@@ -40,7 +40,7 @@ def generateOutput(file_path, file_path_input, patients, schedule, staff, requir
     output_appointmentsStaff = output_appointmentsStaff.fillna("")
     
     ###create table for each staff member
-    print("---------- creating a schedule table for each reseracher/physio") if LANGUAGE == "en" else print("----- gerando tabela de cada pesquisadorx/fisio")
+    print("---------- creating a schedule table for each researcher/physio") if LANGUAGE == "en" else print("----- gerando tabela de cada pesquisadorx/fisio")
     total = len(staff.keys())
     total = 1 if total < 1 else total
     done = 0
@@ -66,14 +66,14 @@ def generateOutput(file_path, file_path_input, patients, schedule, staff, requir
         output_staffMember.columns = planningHorizon_asDate
         done += 1
         with pd.ExcelWriter(file_path, mode="a", if_sheet_exists="replace", engine="openpyxl") as writer:
-            output_staffMember.to_excel(writer, sheet_name=f"Escala|{staffMember}")
+            output_staffMember.to_excel(writer, sheet_name=f"{SHEET_STAFFSCHEDULE}{staffMember}")
     done = total
     print(f"----- creating a schedule table for each researcher/physio: {done/total}") if LANGUAGE == "en" else print(f"----- gerando tabela de cada pesquisadorx/fisio: {done/total}")
             
     print("----- creating main schedule table") if LANGUAGE == "en" else print("----- gerando tabela geral")
     output_appointmentsStaff.columns = planningHorizon_asDate
     with pd.ExcelWriter(file_path, mode="a", if_sheet_exists="replace", engine="openpyxl") as writer:
-            output_appointmentsStaff.to_excel(writer, sheet_name=f"Escala")
+            output_appointmentsStaff.to_excel(writer, sheet_name=SHEET_SCHEDULEMAIN)
     
     ###create sysEsc
     print("----- creating system table (sysEsc)") if LANGUAGE == "en" else print("----- gerando tabela do sistema (sysEsc)")
@@ -99,6 +99,6 @@ def generateOutput(file_path, file_path_input, patients, schedule, staff, requir
             
     sysEsc.rename(columns={"ID": "Pac"}, inplace=True)
     with pd.ExcelWriter(file_path, mode="a", if_sheet_exists="replace", engine="openpyxl") as writer:
-        sysEsc.to_excel(writer, sheet_name=f"sysEsc", index=False)
+        sysEsc.to_excel(writer, sheet_name=SHEET_SYSESC, index=False)
         
     return True

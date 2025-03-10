@@ -2,45 +2,44 @@ import pandas as pd
 from datetime import datetime, timedelta
 import copy
 
-from globalConsts import LANGUAGE
+from globalConsts import *
 
 from utils import simplifyString, get_availability_byPreferenceLists, get_availability_byCyclicLists
 
 '''
-dont forget to call the function simplifyString when handling slot ids from input files
+don't forget to call the function simplifyString when handling slot ids from input files
 '''
 
 def read_excel_data(initialDay, path_file, planningHorizon):
     
-    #setting the planning horizon - hard coded
     print("----- reading settings and slots") if LANGUAGE == "en" else print("----- lendo configurações de horário")
     
     #reading the slots
     try:   
-        df_slot = pd.read_excel(path_file, sheet_name="DefSlot", index_col = "Nome Slot", dtype = str).dropna(how='all')
+        df_slot = pd.read_excel(path_file, sheet_name=SHEET_DEFSLOT, index_col = FIELD_DEFSLOT_NAME, dtype = str).dropna(how='all')
     except:
         print("FILE NOT FOUND!!!") if LANGUAGE == "en" else print("Arquivo não encontrado!!!")
         exit()
-    df_slot["Início Slot"] = pd.to_datetime(df_slot["Início Slot"], format='%H:%M:%S')
-    df_slot["Fim Slot"] = pd.to_datetime(df_slot["Fim Slot"], format='%H:%M:%S')
+    df_slot["start"] = pd.to_datetime(df_slot[FIELD_DEFSLOT_START], format='%H:%M:%S')
+    df_slot["end"] = pd.to_datetime(df_slot[FIELD_DEFSLOT_END], format='%H:%M:%S')
     
     slots = {}
     for index, row in df_slot.iterrows():
-        slots[simplifyString(index)] = {"start": row["Início Slot"], "end": row["Fim Slot"]}
+        slots[simplifyString(index)] = {"start": row["start"], "end": row["end"]}
     
     #reading the staff
     print("----- reading staff's info") if LANGUAGE == "en" else print("----- lendo informações do pessoal")
-    df_staff = pd.read_excel(path_file, sheet_name="Pessoal", dtype = str).dropna(how='all')
-    df_staff.set_index(['ID'], inplace=True)
+    df_staff = pd.read_excel(path_file, sheet_name=SHEET_STAFF, dtype = str).dropna(how='all')
+    df_staff.set_index([FIELD_STAFF_ID], inplace=True)
     
     staff = {}
     for index, row in df_staff.iterrows():
-        if row["Tipo"] == "Pesquisa":
-            staff[index] = {"Name": row["Nome"], "Role": "A", "Patients": []}
-        elif row["Tipo"] == "Fisioterapia":
-            staff[index] = {"Name": row["Nome"], "Role": "B", "Patients": []}
+        if row[FIELD_STAFF_ROLE] == "Pesquisa":
+            staff[index] = {"Name": row[FIELD_STAFF_NAME], "Role": "A", "Patients": []}
+        elif row[FIELD_STAFF_ROLE] == "Fisioterapia":
+            staff[index] = {"Name": row[FIELD_STAFF_NAME], "Role": "B", "Patients": []}
         else:
-            print(f"Pesquisadorx com nome {row["nome"]} possui um Tipo desconhecido. Deveria ser ou Fisioterapia ou Pesquisa")
+            print(f"Pesquisadorx com nome {row[FIELD_STAFF_NAME]} possui um Tipo desconhecido. Deveria ser ou Fisioterapia ou Pesquisa")
             exit()
             
     #creating the matrix N_pf -> the days and shifts the research/physio aren't available
@@ -52,23 +51,23 @@ def read_excel_data(initialDay, path_file, planningHorizon):
             N_pf[staffMember][day] = {}
             for slot in slots.keys():
                 N_pf[staffMember][day][slot] = True
-    df_staffSlotsDays = pd.read_excel(path_file, sheet_name="Pessoal|Dias", dtype = str).dropna(how='all')
-    df_staffSlotsDays = df_staffSlotsDays.set_index("ID")
-    N_pf = get_availability_byPreferenceLists(N_pf, df_staffSlotsDays, slots, ["ID", "Nome"], planningHorizon)
+    df_staffSlotsDays = pd.read_excel(path_file, sheet_name=SHEET_STAFFDAYS, dtype = str).dropna(how='all')
+    df_staffSlotsDays = df_staffSlotsDays.set_index(FIELD_STAFF_ID)
+    N_pf = get_availability_byPreferenceLists(N_pf, df_staffSlotsDays, slots, [FIELD_STAFF_ID, FIELD_STAFF_NAME], planningHorizon)
     ####GET A CyCLICAL UNAVAILABILITY OF RESEARCHERS
-    df_staffSlotsCycle = pd.read_excel(path_file, sheet_name="Pessoal|Ciclo", dtype = str).dropna(how='all')
-    df_staffSlotsCycle = df_staffSlotsCycle.set_index("ID")
-    N_pf = get_availability_byCyclicLists(N_pf, df_staffSlotsCycle, slots, planningHorizon, ["ID", "Nome"], "Pessoal|Ciclo")
+    df_staffSlotsCycle = pd.read_excel(path_file, sheet_name=SHEET_STAFFCYCLIC, dtype = str).dropna(how='all')
+    df_staffSlotsCycle = df_staffSlotsCycle.set_index(FIELD_STAFF_ID)
+    N_pf = get_availability_byCyclicLists(N_pf, df_staffSlotsCycle, slots, planningHorizon, [FIELD_STAFF_ID, FIELD_STAFF_NAME], SHEET_STAFFCYCLIC)
     required_N_pf = copy.deepcopy(N_pf)
     
     #reading the patients
     print("----- reading patient's info") if LANGUAGE == "en" else print("----- lendo informações dos pacientes")
-    df_patients = pd.read_excel(path_file, sheet_name="Pacientes", dtype = str).dropna(how='all')
-    df_patients.set_index(['ID'], inplace=True)
+    df_patients = pd.read_excel(path_file, sheet_name=SHEET_PATIENTS, dtype = str).dropna(how='all')
+    df_patients.set_index([FIELD_PATIENTS_ID], inplace=True)
     
     patients = {}
     for index, row in df_patients.iterrows():
-        patients[index] = {"Name": row["Nome"], "researcher": None, "physio": None}
+        patients[index] = {"Name": row[FIELD_PATIENTS_NAME], "researcher": None, "physio": None}
     
     #creating the matrix N_i -> the days and shifts the patients aren't available
     print("----- reading patient's availability") if LANGUAGE == "en" else print("----- lendo disponibilidade do paciente")
@@ -83,17 +82,17 @@ def read_excel_data(initialDay, path_file, planningHorizon):
                 else:
                     N_i[patient][day][slot] = True
     
-    df_patientSlotsDays = pd.read_excel(path_file, sheet_name="Pacientes|Dias", dtype = str).dropna(how='all')
-    df_patientSlotsDays = df_patientSlotsDays.set_index("ID")
-    N_i = get_availability_byPreferenceLists(N_i, df_patientSlotsDays, slots, ["ID", "Nome"], planningHorizon)
+    df_patientSlotsDays = pd.read_excel(path_file, sheet_name=SHEET_PATIENTSDAYS, dtype = str).dropna(how='all')
+    df_patientSlotsDays = df_patientSlotsDays.set_index(FIELD_PATIENTS_ID)
+    N_i = get_availability_byPreferenceLists(N_i, df_patientSlotsDays, slots, [FIELD_PATIENTS_ID, FIELD_PATIENTS_NAME], planningHorizon)
     
-    df_patientSlotsCycle = pd.read_excel(path_file, sheet_name="Pacientes|Ciclo", dtype = str).dropna(how='all')
-    df_patientSlotsCycle = df_patientSlotsCycle.set_index("ID")
-    N_i = get_availability_byCyclicLists(N_i, df_patientSlotsCycle, slots, planningHorizon, ["ID", "Nome"], "Pacientes|Ciclo")
+    df_patientSlotsCycle = pd.read_excel(path_file, sheet_name=SHEET_PATIENTSCYCLIC, dtype = str).dropna(how='all')
+    df_patientSlotsCycle = df_patientSlotsCycle.set_index(FIELD_PATIENTS_ID)
+    N_i = get_availability_byCyclicLists(N_i, df_patientSlotsCycle, slots, planningHorizon, [FIELD_PATIENTS_ID, FIELD_PATIENTS_NAME], SHEET_PATIENTSCYCLIC)
     
     #get latest schedule
     print("----- reading previous schedule") if LANGUAGE == "en" else print("----- lendo escala anterior")
-    sys_esc = pd.read_excel(path_file, sheet_name="sysEsc", dtype = str).dropna(how='all')
+    sys_esc = pd.read_excel(path_file, sheet_name=SHEET_SYSESC, dtype = str).dropna(how='all')
     
     sessions = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09"]
     follows = ["00", "01"]
@@ -107,7 +106,7 @@ def read_excel_data(initialDay, path_file, planningHorizon):
             schedule[patient][f"FD{follow}"] = None
             schedule[patient][f"FH{follow}"] = None
     
-    x_columns = ["Pac"]
+    x_columns = ["ID"]
     for session in sessions:
         sys_esc[f"SD{session}"] = pd.to_datetime(sys_esc[f"SD{session}"], format='%d/%m/%Y')
         x_columns.append(f"SD{session}")
@@ -118,17 +117,17 @@ def read_excel_data(initialDay, path_file, planningHorizon):
         x_columns.append(f"FH{follow}")
     
     #gets the relations patient-researcher-physio (notice: no consistency is checked)
-    df_v = sys_esc[["Pac", "Pesq", "Fisio"]]
-    df_v.set_index(['Pac'], inplace=True)
+    df_v = sys_esc[["ID", "Res", "Phy"]]
+    df_v.set_index(['ID'], inplace=True)
     for index, row in df_v.iterrows():
-        if not pd.isnull(row["Pesq"]) and not pd.isnull(row["Fisio"]):
-            patients[index]["researcher"] = row["Pesq"]
-            patients[index]["physio"] = row["Fisio"]
-            staff[row["Pesq"]]["Patients"].append(index)
-            staff[row["Fisio"]]["Patients"].append(index)
+        if not pd.isnull(row["Res"]) and not pd.isnull(row["Phy"]):
+            patients[index]["researcher"] = row["Res"]
+            patients[index]["physio"] = row["Phy"]
+            staff[row["Res"]]["Patients"].append(index)
+            staff[row["Phy"]]["Patients"].append(index)
     
     x = sys_esc[x_columns]
-    x.set_index(['Pac'], inplace=True)
+    x.set_index(['ID'], inplace=True)
     
     for index, row in x.iterrows():
         for session in sessions:
@@ -151,7 +150,7 @@ def read_excel_data(initialDay, path_file, planningHorizon):
         
         empty_sessions = 100
         for session in range(9, -1, -1):
-            if df_patients.isnull().at[patient, f"Sessão {0 if session != 9 else ""}{(session+1)}"]:
+            if df_patients.isnull().at[patient, f"{SESSION_NAME_FOR_USER} {0 if session != 9 else ""}{(session+1)}"]:
                 empty_sessions = session
         if empty_sessions < 10:
             for session in range(empty_sessions, 10):

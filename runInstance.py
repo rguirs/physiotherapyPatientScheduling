@@ -1,15 +1,16 @@
 '''
 NEEDS TO SEPARATE THE SCHEDULING AND RESCHEDULING
 '''
+import pandas as pd
 
 from globalConsts import LANGUAGE
 
-def runInstance(instance, isInstanceReschedule):
+def runInstance(instance, isInstanceReschedule, markIsModel = False):
 
 
     nameOfFile = f"./examples/eg.schedule.{instance}"
-    FILE_PATH = f"{nameOfFile}.xlsx"
-    FILE_PATH_OUT = f"{nameOfFile}.m.ot.xlsx"
+    file_path = f"{nameOfFile}.xlsx"
+    file_path_out = f"{nameOfFile}.m.ot.xlsx" if markIsModel else f"{nameOfFile}.ot.xlsx"
 
     dateStarts = ["01/01/2023", "01/01/2024", "01/01/2025", "01/01/2024", "01/01/2023", "01/01/2023"]
     dateEnds =   ["31/07/2024", "31/12/2024", "31/12/2025", "31/12/2025", "31/12/2025", "31/12/2025"]
@@ -21,4 +22,4 @@ def runInstance(instance, isInstanceReschedule):
 
     CURRENT_DAY = dateStart.strftime('%d/%m/%Y') #datetime.today().strftime('%d/%m/%Y')
 
-    
+    return file_path, file_path_out, dateStart, dateEnd, CURRENT_DAY

@@ -1,6 +1,7 @@
 import pandas as pd
-from datetime import datetime, timedelta
-import numpy as np
+from datetime import datetime
+
+from globalConsts import LANGUAGE
 
 def simplifyString(inputStr):
     return inputStr.upper().replace(" ", "")
@@ -24,7 +25,7 @@ def get_availability_byPreferenceLists(N_availability, data, slots, notSlotColum
                         try:
                             day = datetime.strptime(data.iloc[i, j], "%d/%m/%Y")
                         except:
-                            print(f"Impossível ler a data {data.iloc[i, j]} no paciente {user_id}")
+                            print(f"Not possible to read the date {data.iloc[i, j]} of patient {user_id}") if LANGUAGE == "en" else print(f"Impossível ler a data {data.iloc[i, j]} no paciente {user_id}")
                             exit()
                     
                     if day in planningHorizon:
@@ -45,11 +46,11 @@ def get_availability_byPreferenceLists(N_availability, data, slots, notSlotColum
 
     return N_availability
     
-def get_availability_byCiclicLists(N_availability, data, slots, planningHorizon, notSlotColumns, sheetName):
+def get_availability_byCyclicLists(N_availability, data, slots, planningHorizon, notSlotColumns, sheetName):
 
     col_names = data.columns
     
-    daysOfTheWeek = ["SEG", "TER", "QUA", "QUI", "SEX"]
+    daysOfTheWeek = ["MON", "TUE", "WED", "THU", "FRI"] if LANGUAGE == "en" else ["SEG", "TER", "QUA", "QUI", "SEX"]
     
     i = 0
     while i < len(data):
@@ -62,7 +63,7 @@ def get_availability_byCiclicLists(N_availability, data, slots, planningHorizon,
                     
                     day = data.iloc[i, j].upper()
                     if not (any (weekday in day for weekday in daysOfTheWeek)):
-                        print(f"Dia da semana {day} desconhecido na folha {sheetName}")
+                        print(f"Week day {day} not known at sheet {sheetName}")if LANGUAGE == "en" else print(f"Dia da semana {day} desconhecido na folha {sheetName}")
                         exit()
                         
                     weekday = None
