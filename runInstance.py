@@ -7,6 +7,7 @@ from globalConsts import LANGUAGE
 
 def runInstance(instance, isInstanceReschedule, markIsModel = False):
 
+    examplesDir = "examplesEN" if LANGUAGE == "en" else "examplesBR"
 
     nameOfFile = f"./examples/eg.schedule.{instance}"
     file_path = f"{nameOfFile}.xlsx"

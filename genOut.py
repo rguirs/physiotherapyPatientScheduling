@@ -79,8 +79,8 @@ def generateOutput(file_path, file_path_input, patients, schedule, staff, requir
     print("----- creating system table (sysEsc)") if LANGUAGE == "en" else print("----- gerando tabela do sistema (sysEsc)")
     sysEsc = pd.DataFrame(dtype = str)
     sysEsc["ID"] = patients.keys()
-    sysEsc["Pesq"] = pd.Series("")
-    sysEsc["Fisio"] = pd.Series("")
+    sysEsc["Res"] = pd.Series("")
+    sysEsc["Phy"] = pd.Series("")
     for i in range(10):
         sysEsc[f"SD0{i}"] = pd.Series("")
         sysEsc[f"SH0{i}"] = pd.Series("")
@@ -88,8 +88,8 @@ def generateOutput(file_path, file_path_input, patients, schedule, staff, requir
         sysEsc[f"FD0{i}"] = pd.Series("")
         sysEsc[f"FH0{i}"] = pd.Series("")
     for patient in patients.keys():
-        sysEsc.loc[sysEsc["ID"] == patient, "Pesq"] = patients[patient]["researcher"]
-        sysEsc.loc[sysEsc["ID"] == patient, "Fisio"] = patients[patient]["physio"]
+        sysEsc.loc[sysEsc["ID"] == patient, "Res"] = patients[patient]["researcher"]
+        sysEsc.loc[sysEsc["ID"] == patient, "Phy"] = patients[patient]["physio"]
         for i in range(2):
             sysEsc.loc[sysEsc["ID"] == patient, f"FD0{i}"] = schedule[patient][f"FD0{i}"].strftime("%d/%m/%Y")
             sysEsc.loc[sysEsc["ID"] == patient, f"FH0{i}"] = schedule[patient][f"FH0{i}"]
@@ -97,7 +97,6 @@ def generateOutput(file_path, file_path_input, patients, schedule, staff, requir
             sysEsc.loc[sysEsc["ID"] == patient, f"SD0{i}"] = schedule[patient][f"SD0{i}"].strftime("%d/%m/%Y")
             sysEsc.loc[sysEsc["ID"] == patient, f"SH0{i}"] = schedule[patient][f"SH0{i}"]
             
-    sysEsc.rename(columns={"ID": "Pac"}, inplace=True)
     with pd.ExcelWriter(file_path, mode="a", if_sheet_exists="replace", engine="openpyxl") as writer:
         sysEsc.to_excel(writer, sheet_name=SHEET_SYSESC, index=False)
         
