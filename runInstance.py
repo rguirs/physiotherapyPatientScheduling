@@ -13,7 +13,7 @@ def runInstance(instance, isInstanceReschedule, daysToSkipReschedule = 60, markI
     nameOfFile = f"./{examplesDir}/eg.schedule.{instance}"
     file_path = f"{nameOfFile}.rs.xlsx" if isInstanceReschedule else f"{nameOfFile}.xlsx"
     modelMark = ".m" if markIsModel else ""
-    file_path_out = f"{nameOfFile}.rs{modelMark}.ot.xlsx" if isInstanceReschedule else f"{nameOfFile}{modelMark}.rs.ot.xlsx"
+    file_path_out = f"{nameOfFile}.rs{modelMark}.ot.xlsx" if isInstanceReschedule else f"{nameOfFile}{modelMark}.ot.xlsx"
 
     dateStarts = ["01/01/2023", "01/01/2024", "01/01/2025", "01/01/2024", "01/01/2023", "01/01/2023"]
     dateEnds =   ["31/07/2024", "31/12/2024", "31/12/2025", "31/12/2025", "31/12/2025", "31/12/2025"]

@@ -1,4 +1,4 @@
-LANGUAGE = "en" ## or "pt-br"
+LANGUAGE = "en" ## "en" or "pt-br"
 
 if LANGUAGE == "en":
     SHEET_PATIENTS = "Patients"

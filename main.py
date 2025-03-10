@@ -17,12 +17,15 @@ from greedy import greedy
 from runInstance import runInstance
 from genOut import generateOutput
 
+
 mockInstance = True
-instance = 6
+instance = 2
 isInstanceReschedule = True
 
 if mockInstance:
-    daysToSkipReschedule = 60
+    daysToSkipSchedule = 5
+    daysToSkipReschedule = 35
+    daysToSkip = daysToSkipSchedule if isInstanceReschedule else daysToSkipSchedule
     markIsModel = False
     file_path, file_path_out, dateStart, dateEnd, initialDay = runInstance(instance, isInstanceReschedule, daysToSkipReschedule, markIsModel)
 

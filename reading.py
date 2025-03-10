@@ -34,9 +34,9 @@ def read_excel_data(initialDay, path_file, planningHorizon):
     
     staff = {}
     for index, row in df_staff.iterrows():
-        if row[FIELD_STAFF_ROLE] == "Pesquisa":
+        if row[FIELD_STAFF_ROLE] == ROLES_RESEARCHER:
             staff[index] = {"Name": row[FIELD_STAFF_NAME], "Role": "A", "Patients": []}
-        elif row[FIELD_STAFF_ROLE] == "Fisioterapia":
+        elif row[FIELD_STAFF_ROLE] == ROLES_PHYSIO:
             staff[index] = {"Name": row[FIELD_STAFF_NAME], "Role": "B", "Patients": []}
         else:
             print(f"Pesquisadorx com nome {row[FIELD_STAFF_NAME]} possui um Tipo desconhecido. Deveria ser ou Fisioterapia ou Pesquisa")
