@@ -11,6 +11,14 @@ Use "sum variables" if possible and correct
 '''
 
 def model(initialDay, planningHorizon, slots, staff, patients, N_i, N_pf, schedule):
+
+    print(initialDay)
+    print(planningHorizon)
+    print(slots)
+    print(staff)
+    print(patients)
+
+    exit()
     
     D = len(planningHorizon)
     S = len(slots)

@@ -12,7 +12,7 @@ from globalConsts import LANGUAGE
 from reading import read_excel_data
 
 from greedy import greedy
-#from model import model
+from model import model
 
 from runInstance import runInstance
 from genOut import generateOutput
@@ -60,7 +60,7 @@ slots, staff, patients, N_i, N_pf, required_N_pf, schedule = read_excel_data(ini
 
 #runs an algo to solve the problem
 print("---------- STARTING ALGORITHM") if LANGUAGE == "en" else print("---------- INICIANDO ALGORITMO")
-s, patients, schedule, N_pf = greedy(initialDay, planningHorizon, slots, staff, patients, N_i, N_pf, schedule)
+s, patients, schedule, N_pf = model(initialDay, planningHorizon, slots, staff, patients, N_i, N_pf, schedule)
 #s = model(initialDay, planningHorizon, slots, staff, patients, N_i, N_pf, schedule)
 
 if s:

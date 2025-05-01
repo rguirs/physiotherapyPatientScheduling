@@ -150,7 +150,7 @@ def read_excel_data(initialDay, path_file, planningHorizon):
         
         empty_sessions = 100
         for session in range(9, -1, -1):
-            if df_patients.isnull().at[patient, f"{SESSION_NAME_FOR_USER} {0 if session != 9 else ""}{(session+1)}"]:
+            if df_patients.isnull().at[patient, f"{SESSION_NAME_FOR_USER} {0 if session != 9 else ''}{(session+1)}"]:
                 empty_sessions = session
         if empty_sessions < 10:
             for session in range(empty_sessions, 10):

@@ -51,7 +51,7 @@ def greedy(initialDay, planningHorizon, slots, staff, patients, N_i, N_pf, sched
                 E_researcher, E_physio = generateE(N_i, N_pf, patient, researcher, physio, slots, planningHorizon)
                 s, schedule, N_pf = scheduleFollow(N_pf, slots, planningHorizon, patient, researcher, schedule, follow, E_researcher, isReschedule = True)
                 if not s:
-                    print(f"Unable to assign a new follow-up (the one {90*(follow+1)} days after the beginning) for {patients[patient]["Nome"]}") if LANGUAGE == "en" else print(f"Incapaz de definir um novo follow up (após {90*(follow+1)} dias) para paciente {patients[patient]["Nome"]}")
+                    print(f"Unable to assign a new follow-up (the one {90*(follow+1)} days after the beginning) for {patients[patient]['Nome']}") if LANGUAGE == "en" else print(f"Incapaz de definir um novo follow up (após {90*(follow+1)} dias) para paciente {patients[patient]['Nome']}")
                     exit()
                 else:
                     done += 1
@@ -75,7 +75,7 @@ def greedy(initialDay, planningHorizon, slots, staff, patients, N_i, N_pf, sched
             E_researcher, E_physio = generateE(N_i, N_pf, patient, researcher, physio, slots, planningHorizon)
             s, schedule, N_pf = scheduleSession(N_pf, slots, planningHorizon, patient, researcher, physio, initialDay, schedule, session, E_researcher, E_physio, isReschedule = True)
             if not s:
-                print(f"Unable to assign a new session (Session number {(session+1)}) for {patients[patient]["Name"]}. The person responsible: researcher ({patients[patient]["researcher"]}) and physio ({patients[patient]["physio"]})") if LANGUAGE == "en" else print(f"Incapaz de definir uma nova sessão (Sessão número {(session+1)}) para paciente {patients[patient]["Name"]}. Responsáveis por paciente: pesquisadorx ({patients[patient]["researcher"]}) e fisio ({patients[patient]["physio"]})")
+                print(f"Unable to assign a new session (Session number {(session+1)}) for {patients[patient]['Name']}. The person responsible: researcher ({patients[patient]['researcher']}) and physio ({patients[patient]['physio']})") if LANGUAGE == "en" else print(f"Incapaz de definir uma nova sessão (Sessão número {(session+1)}) para paciente {patients[patient]['Name']}. Responsáveis por paciente: pesquisadorx ({patients[patient]['researcher']}) e fisio ({patients[patient]['physio']})")
                 exit()
             else:
                 done += 1
@@ -97,7 +97,7 @@ def greedy(initialDay, planningHorizon, slots, staff, patients, N_i, N_pf, sched
             if s:
                 break
         if not s:
-            print(f"Unable to schedule the patient {patients[patient]["Name"]}") if LANGUAGE == "en" else print(f"Incapaz de agenda paciente com nome {patients[patient]["Name"]}")
+            print(f"Unable to schedule the patient {patients[patient]['Name']}") if LANGUAGE == "en" else print(f"Incapaz de agenda paciente com nome {patients[patient]['Name']}")
             exit()
         else:
             done += 1

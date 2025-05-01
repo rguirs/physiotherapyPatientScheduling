@@ -55,14 +55,14 @@ def generateOutput(file_path, file_path_input, patients, schedule, staff, requir
             if patients[patient]["researcher"] == staffMember:
                 for follow in range(2):
                     output_staffMember.at[schedule[patient][f"FH0{follow}"], schedule[patient][f"FD0{follow}"]] = patients[patient]["Name"]
-                    output_appointmentsStaff.at[schedule[patient][f"FH0{follow}"], schedule[patient][f"FD0{follow}"]] += f"({schedule[patient][f"FH0{follow}"]}) {staff[staffMember]["Name"]}:\n{patients[patient]["Name"]}\n"
+                    output_appointmentsStaff.at[schedule[patient][f"FH0{follow}"], schedule[patient][f"FD0{follow}"]] += f"({schedule[patient][f'FH0{follow}']}) {staff[staffMember]['Name']}:\n{patients[patient]['Name']}\n"
                 for session in [0, 9]:
                     output_staffMember.at[schedule[patient][f"SH0{session}"], schedule[patient][f"SD0{session}"]] = patients[patient]["Name"]
-                    output_appointmentsStaff.at[schedule[patient][f"SH0{session}"], schedule[patient][f"SD0{session}"]] += f"({schedule[patient][f"SH0{session}"]}) {staff[staffMember]["Name"]}:\n{patients[patient]["Name"]}\n"
+                    output_appointmentsStaff.at[schedule[patient][f"SH0{session}"], schedule[patient][f"SD0{session}"]] += f"({schedule[patient][f'SH0{session}']}) {staff[staffMember]['Name']}:\n{patients[patient]['Name']}\n"
             elif patients[patient]["physio"] == staffMember:
                 for session in range(1, 9):
                     output_staffMember.at[schedule[patient][f"SH0{session}"], schedule[patient][f"SD0{session}"]] = patients[patient]["Name"]
-                    output_appointmentsStaff.at[schedule[patient][f"SH0{session}"], schedule[patient][f"SD0{session}"]] += f"({schedule[patient][f"SH0{session}"]}) {staff[staffMember]["Name"]}:\n{patients[patient]["Name"]}\n"
+                    output_appointmentsStaff.at[schedule[patient][f"SH0{session}"], schedule[patient][f"SD0{session}"]] += f"({schedule[patient][f'SH0{session}']}) {staff[staffMember]['Name']}:\n{patients[patient]['Name']}\n"
         output_staffMember.columns = planningHorizon_asDate
         done += 1
         with pd.ExcelWriter(file_path, mode="a", if_sheet_exists="replace", engine="openpyxl") as writer:
