@@ -19,7 +19,7 @@ from genOut import generateOutput
 
 
 mockInstance = True
-instance = 2
+instance = 1
 isInstanceReschedule = True
 
 if mockInstance:
