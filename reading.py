@@ -77,10 +77,7 @@ def read_excel_data(initialDay, path_file, planningHorizon):
         for day in planningHorizon:
             N_i[patient][day] = {}
             for slot in slots.keys():
-                if initialDay > day: ##automatically sets days in past as unable to schedule
-                    N_i[patient][day][slot] = False
-                else:
-                    N_i[patient][day][slot] = True
+                N_i[patient][day][slot] = True
     
     df_patientSlotsDays = pd.read_excel(path_file, sheet_name=SHEET_PATIENTSDAYS, dtype = str).dropna(how='all')
     df_patientSlotsDays = df_patientSlotsDays.set_index(FIELD_PATIENTS_ID)
@@ -89,7 +86,14 @@ def read_excel_data(initialDay, path_file, planningHorizon):
     df_patientSlotsCycle = pd.read_excel(path_file, sheet_name=SHEET_PATIENTSCYCLIC, dtype = str).dropna(how='all')
     df_patientSlotsCycle = df_patientSlotsCycle.set_index(FIELD_PATIENTS_ID)
     N_i = get_availability_byCyclicLists(N_i, df_patientSlotsCycle, slots, planningHorizon, [FIELD_PATIENTS_ID, FIELD_PATIENTS_NAME], SHEET_PATIENTSCYCLIC)
-    
+    required_N_i = copy.deepcopy(N_i)
+    for patient in patients.keys():
+        for day in planningHorizon:
+            for slot in slots.keys():
+                if initialDay > day: ##automatically sets days in past as unable to schedule -> usefull only for heuristics
+                    N_i[patient][day][slot] = False
+
+
     #get latest schedule
     print("----- reading previous schedule") if LANGUAGE == "en" else print("----- lendo escala anterior")
     sys_esc = pd.read_excel(path_file, sheet_name=SHEET_SYSESC, dtype = str).dropna(how='all')
@@ -172,4 +176,15 @@ def read_excel_data(initialDay, path_file, planningHorizon):
                     physio = patients[patient]["physio"]
                     N_pf[physio][schedule[patient][f"SD0{follow}"]][schedule[patient][f"SH0{follow}"]] = False
                 
-    return slots, staff, patients, N_i, N_pf, required_N_pf, schedule
+    return slots, staff, patients, N_i, required_N_i, N_pf, required_N_pf, schedule
+
+    '''
+    
+    NOTICE THAT N_pf IS PROCESSED FOR THE HEURISTICS
+
+    IF YOU ARE DOING A FEASIBILITY CHECK OR ANOTHER APPLICATION THAT ISN'T "DUMB" AS THE HEURISTIC,
+    USE THE required_N_pf
+
+    THE SAME THING HAPPENS WITH N_i and required_N_i
+    
+    '''

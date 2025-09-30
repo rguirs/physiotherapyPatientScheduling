@@ -6,23 +6,48 @@ from datetime import timedelta
 
 from globalConsts import LANGUAGE
 
-def runInstance(instance, isInstanceReschedule, daysToSkipReschedule = 60, markIsModel = False):
+def runTeste(instance, model, check = False):
 
-    examplesDir = "examplesEN" if LANGUAGE == "en" else "examplesBR"
+    instancesData = {
+        1: {"start": "01/01/2025", "end": "31/07/2025"},
+    }
+
+    #examplesDir = "examplesEN" if LANGUAGE == "en" else "examplesBR"
+    examplesDir = "testes"
 
     nameOfFile = f"./{examplesDir}/eg.schedule.{instance}"
-    file_path = f"{nameOfFile}.rs.xlsx" if isInstanceReschedule else f"{nameOfFile}.xlsx"
-    modelMark = ".m" if markIsModel else ""
-    file_path_out = f"{nameOfFile}.rs{modelMark}.ot.xlsx" if isInstanceReschedule else f"{nameOfFile}{modelMark}.ot.xlsx"
-
-    dateStarts = ["01/01/2023", "01/01/2024", "01/01/2025", "01/01/2024", "01/01/2023", "01/01/2023"]
-    dateEnds =   ["31/07/2024", "31/12/2024", "31/12/2025", "31/12/2025", "31/12/2025", "31/12/2025"]
-
+    file_path = f"{nameOfFile}.xlsx" if not model else f"{nameOfFile}.ot.xlsx"
+    if check:
+        file_path = f"{nameOfFile}.xlsx"
+    print("---->", file_path)
+    modelMark = ".m" if model else ""
+    file_path_out = f"{nameOfFile}{modelMark}.ot.xlsx"
 
     print("---------- READING EXCEL FILE") if LANGUAGE == "en" else print("---------- LENDO ARQUIVO EXCEL")
-    dateStart = pd.to_datetime(dateStarts[instance-1], format="%d/%m/%Y")
-    dateEnd = pd.to_datetime(dateEnds[instance-1], format="%d/%m/%Y")
+    dateStart = pd.to_datetime("01/01/2024", format="%d/%m/%Y")
+    dateEnd = pd.to_datetime("31/12/2025", format="%d/%m/%Y")
 
-    CURRENT_DAY = (dateStart + timedelta(days=daysToSkipReschedule)).strftime('%d/%m/%Y')
+    CURRENT_DAY = (dateStart).strftime('%d/%m/%Y')
+
+    return file_path, file_path_out, dateStart, dateEnd, CURRENT_DAY
+
+def runReal(model, instancia):
+
+    #examplesDir = "examplesEN" if LANGUAGE == "en" else "examplesBR"
+    examplesDir = "testes"
+
+    # nameOfFile = f"./{examplesDir}/eg.schedule.{instancia}"
+    nameOfFile = f"./{examplesDir}/desajustado"
+    file_path = f"{nameOfFile}.xlsx" if not model else f"{nameOfFile}.ot.xlsx"
+    
+    print("---->", file_path)
+    modelMark = ".m" if model else ""
+    file_path_out = f"{nameOfFile}{modelMark}.ot.xlsx"
+
+    print("---------- READING EXCEL FILE") if LANGUAGE == "en" else print("---------- LENDO ARQUIVO EXCEL")
+    dateStart = pd.to_datetime("01/01/2025", format="%d/%m/%Y")
+    dateEnd = pd.to_datetime("31/12/2025", format="%d/%m/%Y")
+
+    CURRENT_DAY = (dateStart).strftime('%d/%m/%Y')
 
     return file_path, file_path_out, dateStart, dateEnd, CURRENT_DAY

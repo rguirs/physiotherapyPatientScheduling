@@ -62,31 +62,34 @@ def get_availability_byCyclicLists(N_availability, data, slots, planningHorizon,
                 if not pd.isnull(data.iloc[i, j]):
                     
                     day = data.iloc[i, j].upper()
-                    if not (any (weekday in day for weekday in daysOfTheWeek)):
-                        print(f"Week day {day} not known at sheet {sheetName}")if LANGUAGE == "en" else print(f"Dia da semana {day} desconhecido na folha {sheetName}")
-                        exit()
+
+                    if day.strip() != "":
+
+                        if not (any (weekday in day for weekday in daysOfTheWeek)):
+                            print(f"Week day {day} not known at sheet {sheetName}")if LANGUAGE == "en" else print(f"Dia da semana {day} desconhecido na folha {sheetName}", user_id, i ,j)
+                            exit()
+                            
+                        weekday = None
+                        for k in range(5):
+                            if daysOfTheWeek[k] in day:
+                                weekday = k
+                            
+                        slot = None
+                        slot_focus = []
+                        if i+1 < len(data):
                         
-                    weekday = None
-                    for k in range(5):
-                        if daysOfTheWeek[k] in day:
-                            weekday = k
+                            slot = data.iloc[i+1, j]
                         
-                    slot = None
-                    slot_focus = []
-                    if i+1 < len(data):
-                    
-                        slot = data.iloc[i+1, j]
-                    
-                    if pd.isnull(slot):
-                        for slot in slots.keys():
+                        if pd.isnull(slot):
+                            for slot in slots.keys():
+                                slot_focus.append(slot)
+                        else:
                             slot_focus.append(slot)
-                    else:
-                        slot_focus.append(slot)
-                        
-                    for slot in slot_focus:
-                        for day in planningHorizon:
-                            if day.dayofweek == weekday:
-                                N_availability[user_id][day][slot] = False
+                            
+                        for slot in slot_focus:
+                            for day in planningHorizon:
+                                if day.dayofweek == weekday:
+                                    N_availability[user_id][day][slot] = False
             
         i += 2
 
