@@ -19,3 +19,18 @@ Then we have the rescheduling problem. In order to keep both the original output
 (that shows what sessions must be rescheduled), it was created a new file (based on the previous .ot) called eg.schedule.N.rs.xlsx.
 Finally, the output of the rescheudling problem is provided in eg.schedule.N.rs.ot.xlsx (.ot because it is an output file
 and .rs because it is from a rescheduling problem)
+
+
+# Article (in Portuguese only)
+Link: (ainda não publicado)
+Como citar:
+
+Errata:
+
+1) Na seção 3.1, em conjuntos em variáveis de decisão, temos q, o qual na verdade é definido por:
+   "q → Número de dias que durará o estudo. q ∈ R"
+   "q" também poderia ter o domínio Z+
+
+2) Na seção 3.2, em restrições, HC10.b deveria ser dada por:
+   "x^{it}_{ds} = 0 ∀ i ∈ I, t ∈ T, d ∈ D, s ∈ S | d ≤ dr, H^{it}_{ds} = 0"
+  Com essa mudança, assegura-se que não sejam marcadas consultas nos dias não permitidos. No código, essa restrição já era assegurada, porém, por motivos de processamento, alterando os conjuntos N^i_{ds} e N^p_{ds}. Assim, mesmo com a definição "livre" de HC10.b anterior, os resultados são equivalentes
